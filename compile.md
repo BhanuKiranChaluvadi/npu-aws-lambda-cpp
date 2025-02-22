@@ -69,6 +69,32 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 ### demo
 
 ```bash
+
+$ cat trust-policy.json
+{
+ "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": ["lambda.amazonaws.com"]
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+
+# create trust policy (NOTE down ARN)
+aws iam create-role \
+  --role-name lambda-demo \
+  --assume-role-policy-document file://trust-policy.json
+
+# allow Lambda to write logs in CloudWatch
+aws iam attach-role-policy \
+  --role-name lambda-demo '
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+# Create Lambda function
 aws lambda create-function --function-name demo \
     --role arn:aws:iam::242201308302:role/lambda-demo \
     --runtime provided.al2 \
@@ -77,6 +103,7 @@ aws lambda create-function --function-name demo \
     --handler demo \
     --zip-file fileb://hello.zip
 
+# invoke the Lambda function
 aws lambda invoke \
     --function-name demo \
     --payload fileb://payload.json \
@@ -85,6 +112,8 @@ aws lambda invoke \
 
 ### api-gateway
 ```bash
+# use previous role
+# create lambda function
 aws lambda create-function \
     --function-name cpp-api-gateway-demo \
     --role arn:aws:iam::242201308302:role/lambda-demo \
@@ -94,6 +123,9 @@ aws lambda create-function \
     --handler api \
     --zip-file fileb://api.zip
 
+# attach endpoint to the lambda function
+
+# invoke
 curl -v -X POST \
     'https://vbp29pnl14.execute-api.eu-north-1.amazonaws.com/default/cpp-api-gateway-demo?name=Bradley&city=Chicago' \
     -H 'content-type: application/json' \
@@ -103,6 +135,9 @@ curl -v -X POST \
 
 ### dynamodb
 ```bash
+
+aws iam create-role --role-name lambda-demo --assume-role-policy-document file://trust-policy.json
+
 aws lambda create-function \
     --function-name cpp-dynamodb-demo \
     --role arn:aws:iam::242201308302:role/lambda-demo \
@@ -130,23 +165,40 @@ aws lambda invoke \
 
 ### s3
 ```bash
+
+# allow access to s3
+aws iam attach-role-policy \
+  --role-name lambda-demo \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+
+# create a lambda function
 aws lambda create-function \
-  --function-name cpp-s3-demo \
+  --function-name encode-file \
   --role arn:aws:iam::242201308302:role/lambda-demo \
   --runtime provided.al2 \
   --timeout 15 \
   --memory-size 128 \
-  --handler s3 \
+  --handler encoder \
   --zip-file fileb://encoder.zip
 
+# 1
 aws lambda invoke \
-  --function-name cpp-s3-demo \
+  --function-name encode-file \
   --payload '{
     "s3bucket": "my-test-bucket",
     "s3key": "path/to/my/file.txt"
   }' \
   --cli-binary-format raw-in-base64-out \
   response.json
+
+# 2
+aws lambda invoke \
+  --function-name encode-file \
+  --payload '{
+    "s3bucket": "your_bucket_name", 
+    "s3key":"your_file_key" 
+  }' \
+  base64_image.txt
 ```
 
 
