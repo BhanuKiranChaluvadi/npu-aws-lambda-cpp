@@ -100,7 +100,7 @@ aws lambda create-function --function-name demo \
     --runtime provided.al2 \
     --timeout 15 \
     --memory-size 128 \
-    --handler demo \
+    --handler hello \
     --zip-file fileb://hello.zip
 
 # invoke the Lambda function
@@ -128,9 +128,25 @@ aws lambda create-function \
 # invoke
 curl -v -X POST \
     'https://vbp29pnl14.execute-api.eu-north-1.amazonaws.com/default/cpp-api-gateway-demo?name=Bradley&city=Chicago' \
-    -H 'content-type: application/json' \
-    -H 'day: Sunday' \
+    -H 'content-type: application/json' \   # First header: defines the content type
+    -H 'day: Sunday' \  # Second header: custom header
     -d '{ "time": "evening" }'
+
+# corresponding invole command
+aws lambda invoke \
+  --function-name cpp-api-gateway-demo \
+  --payload '{
+    "queryStringParameters": {
+      "name": "Bradley",
+      "city": "Chicago"
+    },
+    "headers": {
+      "day": "Sunday"
+    },
+    "body": "{\"time\": \"morning\"}"
+  }' \
+  --cli-binary-format raw-in-base64-out \
+  response.json
 ```
 
 ### dynamodb
@@ -139,28 +155,31 @@ curl -v -X POST \
 aws iam create-role --role-name lambda-demo --assume-role-policy-document file://trust-policy.json
 
 aws lambda create-function \
-    --function-name cpp-dynamodb-demo \
-    --role arn:aws:iam::242201308302:role/lambda-demo \
-    --runtime provided.al2 \
-    --timeout 15 \
-    --memory-size 128 \
-    --handler dynamo \
-    --zip-file fileb://dynamo.zip
+  --function-name cpp-dynamodb-demo \
+  --role arn:aws:iam::242201308302:role/lambda-demo \
+  --runtime provided.al2 \
+  --timeout 15 \
+  --memory-size 128 \
+  --handler ddb-demo \
+  --zip-file fileb://dynamo.zip
 
 aws lambda invoke \
   --function-name cpp-dynamodb-demo \
   --payload '{
     "pathParameters": {
-      "productId": "B01234ABCD"
+      "productId": "B01ETPUQ6E"
     },
     "queryStringParameters": {
       "startDate": "2024-01-01T00:00:00Z",
-      "endDate": "2024-02-21T23:59:59Z"
+      "endDate": "2024-02-22T23:59:59Z"
     }
   }' \
   --cli-binary-format raw-in-base64-out \
   response.json
 
+# api gateway
+curl -X GET \
+  'https://<your-api-id>.execute-api.<region>.amazonaws.com/<stage>/products/B01ETPUQ6E?startDate=2024-01-01T00:00:00Z&endDate=2024-02-22T23:59:59Z'
 ```
 
 ### s3

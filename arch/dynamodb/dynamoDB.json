@@ -1,0 +1,58 @@
+{
+    "NPUCreations": {
+      "TableName": "NPUCreations",
+      "KeySchema": [
+        {
+          "AttributeName": "creation_id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "user_id",
+          "KeyType": "RANGE"
+        }
+      ],
+      "AttributeDefinitions": [
+        {
+          "AttributeName": "creation_id",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "user_id",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "element_name",
+          "AttributeType": "S"
+        }
+      ],
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "ElementNameIndex",
+          "KeySchema": [
+            {
+              "AttributeName": "element_name",
+              "KeyType": "HASH"
+            }
+          ],
+          "Projection": {
+            "ProjectionType": "ALL"
+          }
+        }
+      ],
+      "Sample Item": {
+        "creation_id": "uuid",
+        "user_id": "string",
+        "element_name": "string",
+        "title": "string",
+        "description": "string",
+        "image_url": "string",
+        "image_key": "string",
+        "creation_date": "timestamp",
+        "scores": {
+          "total_score": "number",
+          "vote_count": "number"
+        },
+        "tags": ["string"]
+      }
+    }
+  }
