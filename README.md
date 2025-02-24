@@ -24,12 +24,12 @@ docker pull public.ecr.aws/amazonlinux/amazonlinux:2
 docker pull public.ecr.aws/amazonlinux/amazonlinux:2023
 ```
 
-For compiling and installing `AWS SDK CPP` and `AWS Lambda CPP` , refer to the detailed instructions provided in the [AWS Lambda C++ Setup Guide](docs/aws/AWS_Lambda_CPP_Setup_Guide.md).
+For compiling and installing `AWS SDK CPP` and `AWS Lambda CPP` , refer to the detailed instructions provided in the [AWS Lambda C++ Setup Guide](./docs/aws/AWS_Lambda_CPP_Setup_Guide.md).
 
 ### Project Architecture and API Reference
 
-- **High-Level Software Architecture:** See [architecture.md](docs/aws/architecture.md) for an overview of the system design.
-- **API Documentation:** Refer to [endpoints.md](docs/aws/endpoints.md) for details on available API endpoints.
+- **High-Level Software Architecture:** See [architecture.md](./docs/architecture.md) for an overview of the system design.
+- **API Documentation:** Refer to [endpoints.md](./docs/api/endpoints.md) for details on available API endpoints.
 
 ## References
 
